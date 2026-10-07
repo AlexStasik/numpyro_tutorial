@@ -24,15 +24,16 @@ from numpyro.infer import MCMC, NUTS, Predictive
 # %% [markdown]
 # ## Define and show model
 
+
 # %%
-def model(data: jax.Array | None = None) -> None:
-    p = numpyro.sample("p", dist.Beta(1., 1.))
+def one_throw_model(data: jax.Array | None = None) -> None:
+    p = numpyro.sample("p", dist.Beta(1.0, 1.0))
 
     numpyro.sample("obs", dist.Bernoulli(p), obs=data)
 
 
 # %%
-numpyro.render_model(model, render_distributions=True )
+numpyro.render_model(one_throw_model, render_distributions=True)
 
 # %% [markdown]
 # ## Sample from my model without data
@@ -40,7 +41,7 @@ numpyro.render_model(model, render_distributions=True )
 # %%
 key = jax.random.PRNGKey(0)
 
-predictive = Predictive(model, num_samples=10)
+predictive = Predictive(one_throw_model, num_samples=10)
 samples = predictive(key)
 
 print(samples)
@@ -49,21 +50,22 @@ print(samples)
 # %% [markdown]
 # ## Several iid coin throws
 
+
 # %%
-def model(data: jax.Array | None = None, n: int = 10) -> None:
-    p = numpyro.sample("p", dist.Beta(1., 1.))
+def n_throws_model(data: jax.Array | None = None, n: int = 10) -> None:
+    p = numpyro.sample("p", dist.Beta(1.0, 1.0))
 
     with numpyro.plate("throws", n):
         numpyro.sample("obs", dist.Bernoulli(p), obs=data)
 
 
 # %%
-numpyro.render_model(model, render_distributions=True )
+numpyro.render_model(n_throws_model, render_distributions=True)
 
 # %%
 key = jax.random.PRNGKey(0)
 
-predictive = Predictive(model, num_samples=5)
+predictive = Predictive(n_throws_model, num_samples=5)
 samples = predictive(key, n=10)
 print(samples)
 
@@ -74,7 +76,7 @@ print(samples)
 data = jnp.array([0, 1, 0, 1, 1, 0, 1, 0, 1, 1])
 
 # %%
-kernel = NUTS(model)
+kernel = NUTS(n_throws_model)
 mcmc = MCMC(kernel, num_warmup=500, num_samples=10000)
 mcmc.run(jax.random.PRNGKey(0), data=data, n=len(data))
 mcmc.print_summary()
@@ -95,7 +97,7 @@ plt.show()
 # ## Sample from the posterior predictive distribution
 
 # %%
-posterior_predictive = Predictive(model, posterior_samples=posterior_samples)
+posterior_predictive = Predictive(n_throws_model, posterior_samples=posterior_samples)
 new_samples = posterior_predictive(jax.random.PRNGKey(1), n=10)
 
 # %%
