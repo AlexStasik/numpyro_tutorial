@@ -4,4 +4,40 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "arviz>=1.3.0",
+    "arviz-plots>=1.3.2",
+    "jax>=0.11.2",
+    "jupytext>=1.19.6",
+    "matplotlib>=3.11.2",
+    "networkx>=3.7",
+    "numpy>=2.5.3",
+    "numpyro>=0.22.0",
+    "scipy>=1.18.1",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.16.10"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ANN401",
+    "COM812",
+    "CPY001",
+    "D203",
+    "D213",
+    "S101",
+    "T201",
+    "T203",
+    "D100",
+    "ERA001",
+    "PD010",
+]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.flake8-import-conventions]
+[tool.ruff.lint.flake8-import-conventions.aliases]
+numpy = "np"
+pandas = "pd"
