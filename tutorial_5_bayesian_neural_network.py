@@ -14,7 +14,9 @@
 # ---
 
 # %%
-from collections.abc import Callable
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import jax
 import jax.numpy as jnp
@@ -26,8 +28,12 @@ from jax import vmap
 from numpyro import handlers
 from numpyro.infer import MCMC, NUTS
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
 # %% [markdown]
 # ## Generate fake data
+
 
 # %%
 def get_data(
@@ -76,6 +82,7 @@ plt.show()
 
 # %% [markdown]
 # ## Define model
+
 
 # %%
 def nonlin(x: jax.Array) -> jax.Array:
@@ -177,6 +184,7 @@ posterior_samples = mcmc.get_samples()
 
 # %% [markdown]
 # ## Posterior predictive
+
 
 # %%
 def predict(
