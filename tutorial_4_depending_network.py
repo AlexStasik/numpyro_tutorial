@@ -342,7 +342,7 @@ cbar.set_label(r"Usage $u_i$")
 plt.xlabel("x")
 plt.ylabel("y")
 
-plt.title(f"Network failures – measurement {measurement}")
+plt.title(f"Network failures, measurement {measurement}")
 
 plt.axis("equal")
 plt.tight_layout()
