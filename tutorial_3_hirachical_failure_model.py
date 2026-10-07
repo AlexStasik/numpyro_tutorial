@@ -250,7 +250,7 @@ fig, axes = plt.subplots(
 
 axes = axes.flatten()
 
-for ax, (name, true_value) in zip(axes, true_values.items()):
+for ax, (name, true_value) in zip(axes, parameters.items(), strict=True):
 
     values = np.asarray(posterior_samples[name])
 
