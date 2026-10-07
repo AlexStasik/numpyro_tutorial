@@ -26,10 +26,10 @@ ignore = [
     "ANN401",
     "COM812",
     "CPY001",
-    "D",       # tutorial notebooks: docstrings not required
-    "E402",    # notebooks: imports follow markdown cells
-    "N803",    # math/ML convention: X, Y, D_X, D_H, D_Y, N
-    "N806",    # math/ML convention: X, Y, V/V0 (units vs dimensionless)
+    "D",      # tutorial notebooks: docstrings not required
+    "E402",   # notebooks: imports follow markdown cells
+    "N803",   # math/ML convention: X, Y, D_X, D_H, D_Y, N
+    "N806",   # math/ML convention: X, Y, V/V0 (units vs dimensionless)
     "S101",
     "T201",
     "T203",
@@ -43,3 +43,7 @@ unfixable = []
 [tool.ruff.lint.flake8-import-conventions.aliases]
 numpy = "np"
 pandas = "pd"
+
+# Statnett users: set URL to Artifactoy PyPI below
+# [tool.uv]
+# index-url = "https://<Artifactory URL>"
