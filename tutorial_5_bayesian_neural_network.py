@@ -36,8 +36,6 @@ def get_data(
     sigma_obs: float = 0.05,
     N_test: int = 500,
 ) -> tuple[jax.Array, jax.Array, jax.Array]:
-    D_Y = 1
-
     np.random.seed(0)
 
     X = jnp.linspace(-1, 1, N)
