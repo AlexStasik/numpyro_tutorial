@@ -28,14 +28,17 @@ from numpyro.infer import MCMC, NUTS
 # ## Generate data
 
 # %%
-def generate_data(n_tanks: int = 50,
-                  sigma: float = 2.0,
-                  alpha: float = 0.8,
-                  tau: float = 0.5,
-                  c: float = 3.0,
-                  gamma: float = 0.4,
-                  delta: float = 0.5,
-                  seed: int = 42) -> dict[str, np.ndarray]:
+def generate_data(  # noqa: PLR0913
+    *,
+    n_tanks: int = 50,
+    sigma: float = 2.0,
+    alpha: float = 0.8,
+    tau: float = 0.5,
+    c: float = 3.0,
+    gamma: float = 0.4,
+    delta: float = 0.5,
+    seed: int = 42,
+) -> dict[str, np.ndarray]:
 
     rng = np.random.default_rng(seed)
 

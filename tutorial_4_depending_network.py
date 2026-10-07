@@ -110,8 +110,9 @@ plt.show()
 # ## Generate fake data
 
 # %%
-def generate_data(
+def generate_data(  # noqa: PLR0913
     graph: dict[str, np.ndarray],
+    *,
     n_measurements: int = 100,
     lambda0: float = 2.0,
     ell: float = 0.20,

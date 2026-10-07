@@ -26,7 +26,7 @@ class Estimator:
         self.alpha = None
         self.beta = None
 
-    def initiate_prior(self, alpha: float, beta: float, plot: bool = True) -> None:
+    def initiate_prior(self, alpha: float, beta: float, *, plot: bool = True) -> None:
         self.alpha = alpha
         self.beta = beta
         self.history = np.array([])
@@ -40,7 +40,7 @@ class Estimator:
             plt.ylim(0, max(y) * 1.1)
             plt.show()
 
-    def compute_posterior(self, obs: npt.ArrayLike, plot: bool = True) -> None:
+    def compute_posterior(self, obs: npt.ArrayLike, *, plot: bool = True) -> None:
         self.history = np.concatenate((self.history, np.asarray(obs).flatten()))
         self.alpha = self.alpha + np.sum(obs)
         self.beta = self.beta + len(obs) - np.sum(obs)
