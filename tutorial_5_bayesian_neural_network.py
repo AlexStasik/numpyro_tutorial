@@ -14,6 +14,8 @@
 # ---
 
 # %%
+from collections.abc import Callable
+
 import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
@@ -28,7 +30,12 @@ from numpyro.infer import MCMC, NUTS
 # ## Generate fake data
 
 # %%
-def get_data(N=50, D_X=3, sigma_obs=0.05, N_test=500):
+def get_data(
+    N: int = 50,
+    D_X: int = 3,
+    sigma_obs: float = 0.05,
+    N_test: int = 500,
+) -> tuple[jax.Array, jax.Array, jax.Array]:
     D_Y = 1
 
     np.random.seed(0)
@@ -72,11 +79,16 @@ plt.show()
 # ## Define model
 
 # %%
-def nonlin(x):
+def nonlin(x: jax.Array) -> jax.Array:
     return jnp.tanh(x)
 
 
-def model(X, Y=None, D_H=5, D_Y=1):
+def model(
+    X: jax.Array,
+    Y: jax.Array | None = None,
+    D_H: int = 5,
+    D_Y: int = 1,
+) -> None:
     N, D_X = X.shape
 
     w1 = numpyro.sample(
@@ -168,7 +180,13 @@ posterior_samples = mcmc.get_samples()
 # ## Posterior predictive
 
 # %%
-def predict(model, rng_key, samples, X, D_H):
+def predict(
+    model: Callable,
+    rng_key: jax.Array,
+    samples: dict[str, jax.Array],
+    X: jax.Array,
+    D_H: int,
+) -> jax.Array:
     model = handlers.substitute(
         handlers.seed(model, rng_key),
         samples,

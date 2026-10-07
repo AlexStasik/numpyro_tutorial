@@ -25,7 +25,7 @@ from numpyro.infer import MCMC, NUTS, Predictive
 # ## Define and show model
 
 # %%
-def model(data=None):
+def model(data: jax.Array | None = None) -> None:
     p = numpyro.sample("p", dist.Beta(1., 1.))
 
     numpyro.sample("obs", dist.Bernoulli(p), obs=data)
@@ -50,7 +50,7 @@ print(samples)
 # ## Several iid coin throws
 
 # %%
-def model(data=None, n=10):
+def model(data: jax.Array | None = None, n: int = 10) -> None:
     p = numpyro.sample("p", dist.Beta(1., 1.))
 
     with numpyro.plate("throws", n):

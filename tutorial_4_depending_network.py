@@ -28,7 +28,7 @@ from scipy.spatial import Delaunay
 # ## Generate graph
 
 # %%
-def generate_graph(n_nodes=30, seed=42):
+def generate_graph(n_nodes: int = 30, seed: int = 42) -> dict[str, np.ndarray]:
 
     rng = np.random.default_rng(seed)
 
@@ -111,16 +111,16 @@ plt.show()
 
 # %%
 def generate_data(
-    graph,
-    n_measurements=100,
-    lambda0=2.0,
-    ell=0.20,
-    tau=3.0,
-    sigma_z=0.4,
-    usage_min=0.5,
-    usage_max=1.5,
-    seed=123,
-):
+    graph: dict[str, np.ndarray],
+    n_measurements: int = 100,
+    lambda0: float = 2.0,
+    ell: float = 0.20,
+    tau: float = 3.0,
+    sigma_z: float = 0.4,
+    usage_min: float = 0.5,
+    usage_max: float = 1.5,
+    seed: int = 123,
+) -> dict[str, np.ndarray]:
 
     rng = np.random.default_rng(seed)
 
@@ -395,11 +395,11 @@ plt.show()
 
 # %%
 def model(
-    nodes,
-    edges,
-    usage,
-    failures,
-):
+    nodes: np.ndarray,
+    edges: np.ndarray,
+    usage: np.ndarray,
+    failures: np.ndarray,
+) -> None:
 
     n_nodes = nodes.shape[0]
     n_measurements = usage.shape[0]

@@ -49,7 +49,7 @@ plt.show()
 # ## Define model
 
 # %%
-def model(x, y=None):
+def model(x: jax.Array, y: jax.Array | None = None) -> None:
     intercept = numpyro.sample("intercept", dist.Normal(0, 10))
 
     slope = numpyro.sample("slope", dist.Normal(0, 10))

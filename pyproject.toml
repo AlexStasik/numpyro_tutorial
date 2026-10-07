@@ -7,6 +7,7 @@ requires-python = ">=3.14"
 dependencies = [
     "arviz>=1.3.0",
     "arviz-plots>=1.3.2",
+    "graphviz>=0.21",
     "jax>=0.11.2",
     "jupytext>=1.19.6",
     "matplotlib>=3.11.2",
@@ -25,12 +26,12 @@ ignore = [
     "ANN401",
     "COM812",
     "CPY001",
-    "D203",
-    "D213",
+    "D",       # tutorial notebooks: docstrings not required
+    "N803",    # math/ML convention: X, Y, D_X, D_H, D_Y, N
+    "N806",    # math/ML convention: X, Y, V/V0 (units vs dimensionless)
     "S101",
     "T201",
     "T203",
-    "D100",
     "ERA001",
     "PD010",
 ]

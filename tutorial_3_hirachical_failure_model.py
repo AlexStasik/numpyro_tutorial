@@ -28,14 +28,14 @@ from numpyro.infer import MCMC, NUTS
 # ## Generate data
 
 # %%
-def generate_data(n_tanks=50,
-                  sigma=2.0,
-                  alpha=0.8,
-                  tau=0.5,
-                  c=3.0,
-                  gamma=0.4,
-                  delta=0.5,
-                  seed=42):
+def generate_data(n_tanks: int = 50,
+                  sigma: float = 2.0,
+                  alpha: float = 0.8,
+                  tau: float = 0.5,
+                  c: float = 3.0,
+                  gamma: float = 0.4,
+                  delta: float = 0.5,
+                  seed: int = 42) -> dict[str, np.ndarray]:
 
     rng = np.random.default_rng(seed)
 
@@ -103,7 +103,12 @@ data = generate_data(
 # ## Define model
 
 # %%
-def model(V, counts, leak_sizes, leak_tank_id):
+def model(
+    V: np.ndarray,
+    counts: np.ndarray,
+    leak_sizes: np.ndarray,
+    leak_tank_id: np.ndarray,
+) -> None:
 
     n_tanks = len(V)
 
