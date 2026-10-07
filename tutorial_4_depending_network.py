@@ -27,6 +27,7 @@ from scipy.spatial import Delaunay
 # %% [markdown]
 # ## Generate graph
 
+
 # %%
 def generate_graph(n_nodes: int = 30, seed: int = 42) -> dict[str, np.ndarray]:
 
@@ -109,6 +110,7 @@ plt.show()
 # %% [markdown]
 # ## Generate fake data
 
+
 # %%
 def generate_data(  # noqa: PLR0913
     graph: dict[str, np.ndarray],
@@ -130,51 +132,35 @@ def generate_data(  # noqa: PLR0913
 
     n_nodes = len(nodes)
 
-
     # ------------------------------------------------------------
     # 1. Pairwise Euclidean distances
     # ------------------------------------------------------------
 
-    diff = (
-        nodes[:, None, :]
-        - nodes[None, :, :]
-    )
+    diff = nodes[:, None, :] - nodes[None, :, :]
 
     distances = np.linalg.norm(
         diff,
         axis=2,
     )
 
-
     # ------------------------------------------------------------
     # 2. Adjacency matrix
     # ------------------------------------------------------------
 
-    adjacency = np.zeros(
-        (n_nodes, n_nodes)
-    )
+    adjacency = np.zeros((n_nodes, n_nodes))
 
     for i, j in edges:
         adjacency[i, j] = 1.0
         adjacency[j, i] = 1.0
 
-
     # ------------------------------------------------------------
     # 3. Gaussian edge kernel
     # ------------------------------------------------------------
 
-    kernel = np.exp(
-        -distances**2
-        / (2.0 * ell**2)
-    )
-
+    kernel = np.exp(-(distances**2) / (2.0 * ell**2))
 
     # Keep only existing graph edges
-    weights = (
-        adjacency
-        * kernel
-    )
-
+    weights = adjacency * kernel
 
     # ------------------------------------------------------------
     # 4. Weighted graph Laplacian
@@ -182,15 +168,9 @@ def generate_data(  # noqa: PLR0913
 
     degree = weights.sum(axis=1)
 
-    degree_matrix = np.diag(
-        degree
-    )
+    degree_matrix = np.diag(degree)
 
-    laplacian = (
-        degree_matrix
-        - weights
-    )
-
+    laplacian = degree_matrix - weights
 
     # ------------------------------------------------------------
     # 5. GMRF precision matrix
@@ -198,17 +178,10 @@ def generate_data(  # noqa: PLR0913
     # Q = (I + tau * L) / sigma_z^2
     # ------------------------------------------------------------
 
-    precision = (
-        np.eye(n_nodes)
-        + tau * laplacian
-    ) / sigma_z**2
-
+    precision = (np.eye(n_nodes) + tau * laplacian) / sigma_z**2
 
     # Needed only for simulating the data
-    covariance = np.linalg.inv(
-        precision
-    )
-
+    covariance = np.linalg.inv(precision)
 
     # ------------------------------------------------------------
     # 6. Fixed latent correlated node effects
@@ -226,7 +199,6 @@ def generate_data(  # noqa: PLR0913
         cov=covariance,
     )
 
-
     # ------------------------------------------------------------
     # 7. Known usage values
     #
@@ -242,7 +214,6 @@ def generate_data(  # noqa: PLR0913
         size=(n_measurements, n_nodes),
     )
 
-
     # ------------------------------------------------------------
     # 8. Poisson rates
     #
@@ -252,21 +223,13 @@ def generate_data(  # noqa: PLR0913
     # NumPy broadcasts z over all measurements.
     # ------------------------------------------------------------
 
-    lambda_ = (
-        lambda0
-        * usage
-        * np.exp(z)
-    )
-
+    lambda_ = lambda0 * usage * np.exp(z)
 
     # ------------------------------------------------------------
     # 9. Failure counts
     # ------------------------------------------------------------
 
-    failures = rng.poisson(
-        lambda_
-    )
-
+    failures = rng.poisson(lambda_)
 
     return {
         "distances": distances,
@@ -275,16 +238,14 @@ def generate_data(  # noqa: PLR0913
         "laplacian": laplacian,
         "precision": precision,
         "covariance": covariance,
-
         "usage": usage,
-
         # Ground truth
         "true_z": z,
         "true_lambda": lambda_,
-
         # Observations
         "failures": failures,
     }
+
 
 # %%
 true_lambda0 = 10.0
@@ -381,9 +342,7 @@ cbar.set_label(r"Usage $u_i$")
 plt.xlabel("x")
 plt.ylabel("y")
 
-plt.title(
-    f"Network failures – measurement {measurement}"
-)
+plt.title(f"Network failures – measurement {measurement}")
 
 plt.axis("equal")
 plt.tight_layout()
@@ -393,6 +352,7 @@ plt.show()
 
 # %% [markdown]
 # ## Define model
+
 
 # %%
 def model(
@@ -404,7 +364,6 @@ def model(
 
     n_nodes = nodes.shape[0]
     n_measurements = usage.shape[0]
-
 
     # ------------------------------------------------------------
     # 1. Global parameters
@@ -430,29 +389,22 @@ def model(
         dist.HalfNormal(1.0),
     )
 
-
     # ------------------------------------------------------------
     # 2. Pairwise Euclidean distances
     # ------------------------------------------------------------
 
-    diff = (
-        nodes[:, None, :]
-        - nodes[None, :, :]
-    )
+    diff = nodes[:, None, :] - nodes[None, :, :]
 
     distances = jnp.linalg.norm(
         diff,
         axis=2,
     )
 
-
     # ------------------------------------------------------------
     # 3. Adjacency matrix
     # ------------------------------------------------------------
 
-    adjacency = jnp.zeros(
-        (n_nodes, n_nodes)
-    )
+    adjacency = jnp.zeros((n_nodes, n_nodes))
 
     adjacency = adjacency.at[
         edges[:, 0],
@@ -463,22 +415,14 @@ def model(
         edges[:, 1],
         edges[:, 0],
     ].set(1.0)
-
 
     # ------------------------------------------------------------
     # 4. Gaussian edge kernel
     # ------------------------------------------------------------
 
-    kernel = jnp.exp(
-        -distances**2
-        / (2.0 * ell**2)
-    )
+    kernel = jnp.exp(-(distances**2) / (2.0 * ell**2))
 
-    weights = (
-        adjacency
-        * kernel
-    )
-
+    weights = adjacency * kernel
 
     # ------------------------------------------------------------
     # 5. Weighted graph Laplacian
@@ -486,11 +430,7 @@ def model(
 
     degree = weights.sum(axis=1)
 
-    laplacian = (
-        jnp.diag(degree)
-        - weights
-    )
-
+    laplacian = jnp.diag(degree) - weights
 
     # ------------------------------------------------------------
     # 6. GMRF precision matrix
@@ -498,11 +438,7 @@ def model(
     # Q = (I + tau * L) / sigma_z^2
     # ------------------------------------------------------------
 
-    precision = (
-        jnp.eye(n_nodes)
-        + tau * laplacian
-    ) / sigma_z**2
-
+    precision = (jnp.eye(n_nodes) + tau * laplacian) / sigma_z**2
 
     # ------------------------------------------------------------
     # 7. Fixed latent correlated node effects
@@ -519,7 +455,6 @@ def model(
         ),
     )
 
-
     # ------------------------------------------------------------
     # 8. Poisson rates
     #
@@ -534,44 +469,38 @@ def model(
     # (n_measurements, n_nodes)
     # ------------------------------------------------------------
 
-    lambda_ = (
-        lambda0
-        * usage
-        * jnp.exp(z)
-    )
-
+    lambda_ = lambda0 * usage * jnp.exp(z)
 
     # ------------------------------------------------------------
     # 9. Observed failures
     # ------------------------------------------------------------
 
-    with numpyro.plate(
-        "measurements",
-        n_measurements,
-        dim=-2,
-    ), numpyro.plate(
-        "nodes",
-        n_nodes,
-        dim=-1,
+    with (
+        numpyro.plate(
+            "measurements",
+            n_measurements,
+            dim=-2,
+        ),
+        numpyro.plate(
+            "nodes",
+            n_nodes,
+            dim=-1,
+        ),
     ):
-
         numpyro.sample(
             "failures",
             dist.Poisson(lambda_),
             obs=failures,
         )
 
+
 # %%
 nodes_jax = jnp.asarray(nodes)
 edges_jax = jnp.asarray(edges)
 
-usage_jax = jnp.asarray(
-    data["usage"]
-)
+usage_jax = jnp.asarray(data["usage"])
 
-failures_jax = jnp.asarray(
-    data["failures"]
-)
+failures_jax = jnp.asarray(data["failures"])
 
 numpyro.render_model(
     model,
@@ -597,13 +526,9 @@ numpyro.render_model(
 nodes_jax = jnp.asarray(nodes)
 edges_jax = jnp.asarray(edges)
 
-usage_jax = jnp.asarray(
-    data["usage"]
-)
+usage_jax = jnp.asarray(data["usage"])
 
-failures_jax = jnp.asarray(
-    data["failures"]
-)
+failures_jax = jnp.asarray(data["failures"])
 
 
 # ------------------------------------------------------------
@@ -656,9 +581,7 @@ posterior_samples = mcmc.get_samples()
 posterior_samples.keys()
 
 # %%
-idata = az.from_numpyro(
-    mcmc
-)
+idata = az.from_numpyro(mcmc)
 
 # %%
 az.summary(
@@ -710,10 +633,7 @@ plt.show()
 # %%
 divergences = mcmc.get_extra_fields()["diverging"]
 
-print(
-    "Number of divergences:",
-    divergences.sum()
-)
+print("Number of divergences:", divergences.sum())
 
 # %% [markdown]
 # ## Posterior dependence
@@ -793,9 +713,7 @@ fig, axes = plt.subplots(
 
 
 for row in range(n_vars):
-
     for col in range(n_vars):
-
         ax = axes[row, col]
 
         # Upper triangle: empty
@@ -808,13 +726,11 @@ for row in range(n_vars):
 
         x = samples[x_name]
 
-
         # ----------------------------------------------------
         # Diagonal: posterior distribution
         # ----------------------------------------------------
 
         if row == col:
-
             ax.hist(
                 x,
                 bins=40,
@@ -831,13 +747,11 @@ for row in range(n_vars):
                 label="Ground truth",
             )
 
-
         # ----------------------------------------------------
         # Lower triangle: pairwise posterior samples
         # ----------------------------------------------------
 
         else:
-
             y = samples[y_name]
 
             ax.scatter(
@@ -857,7 +771,6 @@ for row in range(n_vars):
                 linewidth=2.5,
                 zorder=10,
             )
-
 
         # ----------------------------------------------------
         # Labels

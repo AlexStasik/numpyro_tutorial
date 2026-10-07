@@ -27,6 +27,7 @@ from numpyro.infer import MCMC, NUTS
 # %% [markdown]
 # ## Generate data
 
+
 # %%
 def generate_data(  # noqa: PLR0913
     *,
@@ -73,7 +74,6 @@ def generate_data(  # noqa: PLR0913
         "counts": counts,
         "leak_sizes": np.asarray(leak_sizes),
         "leak_tank_id": np.asarray(leak_tank_id),
-
         # Ground truth
         "true_beta": beta,
         "true_b": b,
@@ -105,6 +105,7 @@ data = generate_data(
 # %% [markdown]
 # ## Define model
 
+
 # %%
 def model(
     V: np.ndarray,
@@ -127,31 +128,35 @@ def model(
 
     beta = jnp.exp(b)
 
-    lambda_ = (sigma * v**alpha * beta)
+    lambda_ = sigma * v**alpha * beta
 
     with numpyro.plate("tank_counts", n_tanks):
         numpyro.sample("counts", dist.Poisson(lambda_), obs=counts)
 
-
-    c = numpyro.sample("c",dist.LogNormal(0.0, 1.0))
+    c = numpyro.sample("c", dist.LogNormal(0.0, 1.0))
 
     gamma = numpyro.sample("gamma", dist.Normal(0.0, 1.0))
     delta = numpyro.sample("delta", dist.Normal(0.0, 1.0))
 
-    mean_leak = (c * v**gamma * beta**delta)
+    mean_leak = c * v**gamma * beta**delta
 
     leak_mean = mean_leak[leak_tank_id]
 
     with numpyro.plate("leaks", len(leak_sizes)):
         numpyro.sample("leak_sizes", dist.Exponential(1.0 / leak_mean), obs=leak_sizes)
 
+
 # %%
-numpyro.render_model(model,
-                     model_kwargs={"V": jnp.asarray(data["V"]),
-                                   "counts": jnp.asarray(data["counts"]),
-                                   "leak_sizes": jnp.asarray(data["leak_sizes"]),
-                                   "leak_tank_id": jnp.asarray(data["leak_tank_id"])},
-                    render_distributions=True)
+numpyro.render_model(
+    model,
+    model_kwargs={
+        "V": jnp.asarray(data["V"]),
+        "counts": jnp.asarray(data["counts"]),
+        "leak_sizes": jnp.asarray(data["leak_sizes"]),
+        "leak_tank_id": jnp.asarray(data["leak_tank_id"]),
+    },
+    render_distributions=True,
+)
 
 # %%
 print("Number of tanks:", len(data["V"]))
@@ -210,9 +215,7 @@ for name, true_value in parameters.items():
     posterior_mean = samples[name].mean()
 
     print(
-        f"{name:6s} | "
-        f"true = {true_value:6.3f} | "
-        f"posterior mean = {posterior_mean:6.3f}"
+        f"{name:6s} | true = {true_value:6.3f} | posterior mean = {posterior_mean:6.3f}"
     )
 
 # %%
@@ -251,7 +254,6 @@ fig, axes = plt.subplots(
 axes = axes.flatten()
 
 for ax, (name, true_value) in zip(axes, parameters.items(), strict=True):
-
     values = np.asarray(posterior_samples[name])
 
     ax.hist(
@@ -279,9 +281,7 @@ plt.show()
 # ## Tank-specific effects
 
 # %%
-posterior_beta = np.exp(
-    np.asarray(posterior_samples["b"])
-)
+posterior_beta = np.exp(np.asarray(posterior_samples["b"]))
 
 true_beta = np.asarray(data["true_beta"])
 
@@ -300,7 +300,6 @@ fig, axes = plt.subplots(
 axes = np.asarray(axes).flatten()
 
 for i in range(n_tanks):
-
     ax = axes[i]
 
     ax.hist(

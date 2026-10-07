@@ -30,14 +30,18 @@ from numpyro.infer import MCMC, NUTS, Predictive
 key = jax.random.PRNGKey(42)
 n = 50
 
-true_intercept = 2.
-true_slope = 3.
-true_sigma = 3.
+true_intercept = 2.0
+true_slope = 3.0
+true_sigma = 3.0
 
 key, sub_key = jax.random.split(key)
-x = jax.random.normal(sub_key, shape=(n,) )
+x = jax.random.normal(sub_key, shape=(n,))
 key, sub_key = jax.random.split(key)
-y = true_slope * x + true_intercept + true_sigma * jax.random.normal(sub_key, shape=(n,))
+y = (
+    true_slope * x
+    + true_intercept
+    + true_sigma * jax.random.normal(sub_key, shape=(n,))
+)
 
 plt.figure()
 plt.scatter(x, y, label="Data", color="k")
@@ -47,6 +51,7 @@ plt.show()
 
 # %% [markdown]
 # ## Define model
+
 
 # %%
 def model(x: jax.Array, y: jax.Array | None = None) -> None:
@@ -63,7 +68,7 @@ def model(x: jax.Array, y: jax.Array | None = None) -> None:
 
 
 # %%
-numpyro.render_model(model, model_kwargs={"x": x}, render_distributions=True )
+numpyro.render_model(model, model_kwargs={"x": x}, render_distributions=True)
 
 # %% [markdown]
 # ## Doing inference
@@ -92,7 +97,9 @@ y_true = true_intercept + true_slope * x_plot
 n_lines = 1000
 
 key, subkey = jax.random.split(key)
-idx = jax.random.choice(subkey, len(posterior_samples["slope"]), shape=(n_lines,), replace=False)
+idx = jax.random.choice(
+    subkey, len(posterior_samples["slope"]), shape=(n_lines,), replace=False
+)
 
 plt.figure()
 for i in idx:
@@ -111,7 +118,7 @@ plt.show()
 key, sub_key = jax.random.split(key)
 posterior_predictive = Predictive(model, posterior_samples=posterior_samples)
 predictive_samples = posterior_predictive(sub_key, x=x)
-y_new = predictive_samples["obs"][0,:]
+y_new = predictive_samples["obs"][0, :]
 
 # %%
 plt.figure(figsize=(7, 5))
