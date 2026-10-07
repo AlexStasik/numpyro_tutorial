@@ -35,16 +35,17 @@ def get_data(
     D_X: int = 3,
     sigma_obs: float = 0.05,
     N_test: int = 500,
+    seed: int = 0,
 ) -> tuple[jax.Array, jax.Array, jax.Array]:
-    np.random.seed(0)
+    rng = np.random.default_rng(seed)
 
     X = jnp.linspace(-1, 1, N)
     X = jnp.power(X[:, np.newaxis], jnp.arange(D_X))
 
-    W = 0.5 * np.random.randn(D_X)
+    W = 0.5 * rng.standard_normal(D_X)
 
     Y = jnp.dot(X, W) + 0.5 * jnp.power(0.5 + X[:, 1], 2.0) * jnp.sin(4.0 * X[:, 1])
-    Y += sigma_obs * np.random.randn(N)
+    Y += sigma_obs * rng.standard_normal(N)
     Y = Y[:, np.newaxis]
     Y -= jnp.mean(Y)
     Y /= jnp.std(Y)
