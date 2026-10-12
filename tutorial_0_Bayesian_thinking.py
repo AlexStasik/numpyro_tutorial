@@ -31,6 +31,7 @@ class Estimator:
     def __init__(self) -> None:
         self.alpha = None
         self.beta = None
+        self.p_hat = None
 
     def initiate_prior(self, alpha: float, beta: float, *, plot: bool = True) -> None:
         self.alpha = alpha
@@ -58,11 +59,13 @@ class Estimator:
         self.history = np.concatenate((self.history, np.asarray(obs).flatten()))
         self.alpha = self.alpha + np.sum(obs)
         self.beta = self.beta + len(obs) - np.sum(obs)
+        self.p_hat = np.sum(self.history) / len(self.history)
         if plot:
             x = np.linspace(0, 1, 1000)
             y = stats.beta.pdf(x, self.alpha, self.beta)
             plt.plot(x, y)
             plt.fill_between(x, y, alpha=0.3)
+            plt.axvline(x=self.p_hat, color='r', linestyle='--')
             plt.title("Posterior Distribution")
             plt.xlim(0, 1)
             plt.ylim(0, max(y) * 1.1)
