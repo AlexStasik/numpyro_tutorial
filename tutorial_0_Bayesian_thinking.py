@@ -55,7 +55,10 @@ class Estimator:
         assert self.alpha is not None, "Initiate prior before computing posterior"
         assert self.beta is not None, "Initiate prior before computing posterior"
 
-        self.history = np.concatenate((self.history, np.asarray(obs).flatten()))
+        obs = np.asarray(obs).flatten()
+        mle = np.mean(obs) if obs.size else None
+
+        self.history = np.concatenate((self.history, obs))
         self.alpha = self.alpha + np.sum(obs)
         self.beta = self.beta + len(obs) - np.sum(obs)
         if plot:
@@ -63,9 +66,13 @@ class Estimator:
             y = stats.beta.pdf(x, self.alpha, self.beta)
             plt.plot(x, y)
             plt.fill_between(x, y, alpha=0.3)
+            if mle is not None:
+                plt.axvline(mle, color="red", linestyle="--", label=f"MLE = {mle:.3f}")
             plt.title("Posterior Distribution")
             plt.xlim(0, 1)
             plt.ylim(0, max(y) * 1.1)
+            if mle is not None:
+                plt.legend()
             plt.show()
 
             print(self.history)
